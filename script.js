@@ -1,26 +1,19 @@
 const choices = ['paper', 'rock', 'scissors']
-
+const buttons = document.querySelectorAll("button")
+const score = document.querySelector("span")
+const message = document.querySelector("p")
 let humanScore = 0;
 let computerScore = 0;
+score.textContent= `H score : ${humanScore} VS C Score : ${computerScore}`
+
 
 const getComputerChoice = () =>{
     const randomIndex = Math.floor(Math.random() * choices.length)
-    console.log(randomIndex)
     return choices[randomIndex]
 }
 
 const checkHumanInput = (input) =>{
     return choices.includes(input.toLowerCase())
-}
-
-const getHumanChoice = () => {
-    let humanInput = prompt("rock, paper or scissors ? ")
-    while(!checkHumanInput(humanInput)){
-        alert("That's not a choice")
-        humanInput = prompt("rock, paper or scissors ? ")
-        checkHumanInput(humanInput)
-    }
-    return humanInput
 }
 
 const comparateChoices = (humanChoice, computerChoice) => {
@@ -33,34 +26,40 @@ const comparateChoices = (humanChoice, computerChoice) => {
     }else if(humanChoice === computerChoice){
             return -1
     }else{
-        
         return 0
     }
 }
 
-const getScore = () =>  console.log("H score : ", humanScore, " VS C Score : ", computerScore)
+const refreshScore = () =>  score.textContent= `H score : ${humanScore} VS C Score : ${computerScore}`
+
+const checkSomeoneWin = () =>{
+    if(humanScore === 5 || computerScore === 5){
+        message.textContent = humanScore === 5 ? "You win !" : "You lose !"
+        humanScore, computerScore = 0
+    }
+}
 
 const playRound = (humanChoice, computerChoice) =>{
-    const roundResult = comparateChoices(humanChoice, computerChoice)
-    if(roundResult === -1){
-        console.log("Nobody win")
-        return 
+    if(checkHumanInput(humanChoice)){
+        const roundResult = comparateChoices(humanChoice, computerChoice)
+        if(roundResult === -1){
+            message.textContent = "Nobody win"
+            return 
+        }
+        message.textContent = roundResult === 0 ? 
+            `You win ! ${humanChoice.toLowerCase()} beat ${computerChoice.toLowerCase()} !` 
+            : 
+            `You lose ! ${humanChoice.toLowerCase()} beat ${computerChoice.toLowerCase()} !`
+        roundResult === 0 ? humanScore++ : computerScore++
+        refreshScore()
+        checkSomeoneWin()
     }
-    console.log(roundResult === 0 ? `You win ! ${humanChoice.toLowerCase()} beat ${computerChoice.toLowerCase()} !` : `You lose ! ${humanChoice.toLowerCase()} beat ${computerChoice.toLowerCase()} !`)
-    roundResult === 0 ? humanScore++ : computerScore++
 }
 
-const game = () => {
-    let humanSelection;
-    let computerSelection;
-    for(let i=0; i<5; i++){
-        humanSelection = getHumanChoice();
-        computerSelection = getComputerChoice();
-        playRound(humanSelection, computerSelection)
-        getScore()
-    }
-    const winner = humanScore > computerScore ? "Human" : "Computer"
-    console.log("The winner is : ", winner)
-}
+buttons.forEach(element => {
+    element.addEventListener("click", ()=>{
+        playRound(element.value, getComputerChoice())
+    });
+})
+    
 
-game()
